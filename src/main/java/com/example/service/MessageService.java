@@ -1,16 +1,24 @@
 package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
-import com.example.entity.Account;
+//import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.repository.MessageRepository;
-import com.example.repository.AccountRepository;
+//import com.example.repository.AccountRepository;
 
+/* 
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+*/
 
 @Service
 public class MessageService {
@@ -35,47 +43,58 @@ public class MessageService {
 
     }
 
+
     public Message getMessageyById(int messageId){
+        
         Optional<Message> optionalMessage = messageRepository.findById(messageId);
         if(optionalMessage.isPresent()){
             return optionalMessage.get();
-        }else{
+        }
+        else{
             return null;
         }
     }
 
-        public void deleteMessageById(int messageId){
+        public void deleteMessageById(Integer messageId){
     
-            messageRepository.deleteById(messageId);
+               messageRepository.deleteById(messageId);
         }
     
-        public ArrayList<Message> getAllPostByOneUser(int posted_by, Message message) {
+        public Message getAllPostByOneUser(int posted_by, Message message) {
 
-            message.getPostedBy().equals(posted_by); 
+           if(message.getPostedBy().equals(posted_by)) 
 
-            messageRepository.save(message);
-            return null;
+               messageRepository.save(message);
+           
+               return message;
+           
+        }
 
+
+     public Message updatMessage(Message message, Integer message_id, String message_text) {
+
+            if ((this.messageRepository.findById(message_id) != null) && (message.getMessageText() != "")
+                    && (message.getMessageText().length() <= 225)) {
+
+        Optional<Message> optionalMessage = messageRepository.findById(message_id);
     
-        }
-
-        public Message addSongToAlbum(Integer posted_by, Message message){
-            message.getPostedBy().equals(posted_by);  //.getSongs().add(song);
-
-            messageRepository.save(message);
-            return message;
-
-        }
-
-    public void updateMessage(int messageId, Message changMessage){
-
-        Optional<Message> optionalMessage = messageRepository.findById(messageId);
-        if(optionalMessage.isPresent()){
-            Message message = optionalMessage.get();
+            Message changMessage = optionalMessage.get();
             message.setMessageText(changMessage.getMessageText());
             messageRepository.save(message);
+
+            return this.messageRepository.getById(message_id);
         }
 
+        return null;
+    }
+
+
+    public List<Message> getAllPostByOneUser(Integer posted_by) {
+       
+       // ArrayList<Message> messagesPostedBy = new ArrayList<>();
+   
+        return  messageRepository.findByPostedBy(posted_by);  //findByPostedBy();  //.posted_by(posted_by);  //.find//messageDAO.getAllMessageByThisUser(posted_by);
+     
     }
 
 

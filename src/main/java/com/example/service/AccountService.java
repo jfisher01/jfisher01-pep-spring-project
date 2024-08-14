@@ -17,20 +17,26 @@ public class AccountService {
     AccountService( AccountRepository accountRepository){
         this.accountRepository = accountRepository;
     }
-   
-    public Account persistAccount(Account account){
-        return accountRepository.save(account);
-    }
 
-    public Account getAccountByUsernameAndPassword(String username, String password, Account account){
+
+    public Account createNewAccount(Account account){
+
+        if ((account.getUsername() != "") && (account.getPassword().length() >= 4)
+        && (account.getUsername() != null)) {
+    return accountRepository.save(account); 
+} else {
+    return null;
+}
+    }
   
-         
-        return account;
-    }
 
-    public Account createAccount(Account account){
-        return accountRepository.save(account);
-    }
+        public Account logIntoAccount(Account account, String username, String password) {
+
+            account = accountRepository.logIntoAccount(account, username, password);
+    
+                return account;
+        } 
+        
 
     }
 
