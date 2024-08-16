@@ -34,9 +34,21 @@ else {
 
 
     //Login to account
-    public List<Account>  findByUsernameAndPassword(String userName, String password){
+    /* 
+    public List<Account>  getByUsernameAndPassword(String userName, String password){
 
          List <Account> loginInfo = accountRepository.findByUsernameAndPassword(userName, password);
+        
+        return loginInfo;
+
+            public User updateUserProfile(@PathVariable Long userId, @RequestBody User updatedUser) 
+    }
+
+*/
+    
+    public Account  getAccountByUsernameAndPassword(String userName, String password){
+
+         Account loginInfo = accountRepository.findByUsernameAndPassword(userName, password);
         
         return loginInfo;
 

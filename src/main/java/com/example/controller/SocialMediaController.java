@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +46,7 @@ public class SocialMediaController {
     
 
   //Create account  
+   
     @PostMapping("/register")
     public @ResponseBody ResponseEntity<Account> register(@RequestBody Account account, @RequestParam String username,@RequestParam String password){
            
@@ -65,12 +67,37 @@ public class SocialMediaController {
     }
   }
 
+
+/*  
+@RequestMapping("/register",method = RequestMethod.POST)
+public @ResponseBody Account register(@RequestBody Account newUser) {
+  Account newaccount =  accountService.createNewAccount(account, username, password);
+           accountRepository.save(newaccount);
+
+           if(newaccount.equals(null)){
+               account.equals(null);
+           return ResponseEntity.status(400).body(newaccount);
+
+           }
+           else if(accountRepository.findById(newaccount.getAccountId()).isPresent()){
+            return ResponseEntity.status(200).body(newaccount);
+           }
+           else{ 
+             return ResponseEntity.status(409).body(null);
+
+    }
+  
+}
+*/
+
+
+
 //Login
 @PostMapping(value ="/login")
 public @ResponseBody ResponseEntity<List<Account>> logIn(@RequestBody Account account,@RequestParam String username,@RequestParam String password){
 
   //accountRepository.findByUsernameAndPassword(username, password);;
-   List <Account> loginAccount = accountRepository.findByUsernameAndPassword(username, password);//accountService.findByUsernameAndPassword(username, passwordl);
+   List <Account> loginAccount = accountRepository.findByUsernameAndPassword(username, password);
    
     if(loginAccount.isEmpty()){
   
@@ -88,6 +115,34 @@ public @ResponseBody ResponseEntity<List<Account>> logIn(@RequestBody Account ac
  }
 
 }
+
+
+/* 
+@RequestMapping(("/login" , method = RequestMethod.POST))
+public  ResponseEntity login(@RequestBody Account account,@RequestParam String username,@RequestParam String password) {
+  // Logic to authenticate user login
+  Account loginAccount = accountRepository.findByUsernameAndPassword(username, password);//findByUsernameAndPassword(username, password);//accountService.findByUsernameAndPassword(username, passwordl);
+   
+  if(loginAccount.equals(null)){
+
+      return ResponseEntity.status(401).body(lo);
+     
+  }
+  else if( Collections.frequency(loginAccount, account.getUsername() ) >1){    
+             
+
+ return ResponseEntity.status(409).body(loginAccount);
+
+}
+else{
+return ResponseEntity.status(200).body(loginAccount);
+}
+
+}
+*/
+
+
+
 
 //Create message
 @PostMapping("/messages")
@@ -107,7 +162,15 @@ return   ResponseEntity.status(200).body(message);
 @GetMapping("/messages")
 public ResponseEntity<List<Message>> getAllMessages() {
 
-    return ResponseEntity.status(200).body(messageService.listAll());
+  List<Message> allMessages = messageService.listAll();
+
+ if(allMessages.isEmpty()){
+    allMessages.isEmpty();
+    
+  return ResponseEntity.status(200).body(allMessages);
+ }
+
+    return ResponseEntity.status(200).body(allMessages);
   
 }
 
@@ -138,8 +201,9 @@ public ResponseEntity<Message> deleteMessage(@PathVariable("messageId") Integer 
 
     return ResponseEntity.status(200).body(null);
     }
+   
     else{
-      return ResponseEntity.status(200).body(null) ;
+      return ResponseEntity.status(200).body(null);
     }
   } 
 

@@ -12,8 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 @Repository
 public interface AccountRepository extends JpaRepository <Account,Integer>{
   
-  @Query("SELECT a FROM Account a WHERE a.username =:username AND a.password =:password")
-  //List<Account>  findByUsernameAndPassword(@Param("username") String username,@Param("password") String password);
-  List<Account>  findByUsernameAndPassword(@RequestParam("username") String username,@RequestParam("password") String password);
-
+ @Query("SELECT a FROM Account a WHERE a.username =:username AND a.password =:password")
+ // List<Account>  findByUsernameAndPassword(@RequestParam("username") String username,@RequestParam("password") String password);
+ List<Account> findByUsernameAndPassword(String username, String password);
 }

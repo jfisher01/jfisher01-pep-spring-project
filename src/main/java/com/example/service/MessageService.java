@@ -34,7 +34,15 @@ public MessageService (MessageRepository messageRepository){
 
 
      public List<Message> listAll() {
-      return messageRepository.findAll();
+
+      List<Message> allMessages = messageRepository.findAll();
+   
+      if (allMessages.equals(null)) {
+          return allMessages;
+      } else {
+
+          return allMessages;
+      }
   }
 
 
