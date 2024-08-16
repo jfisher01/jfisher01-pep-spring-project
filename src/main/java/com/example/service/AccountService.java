@@ -19,21 +19,22 @@ public class AccountService {
     }
 
 
-    public Account createNewAccount(Account account, String username, String password){
+    public Account createNewAccount(Account account){
 
         if ((account.getUsername() != "") && (account.getPassword().length() >= 4)
-        && (account.getUsername() != null)) {
+        && (account.getUsername() != null) && ( accountRepository.findByUsernameAndPassword(account.getUsername(),account.getPassword()) == null)) {
         
-        return    accountRepository.save(new Account(username, password));
+       return accountRepository.save(account);
+        }
 
-} 
-else {
-    return null;
-}
-    }
+        return null;
+        }
+
+    
 
 
     //Login to account
+     
     /* 
     public List<Account>  getByUsernameAndPassword(String userName, String password){
 
@@ -41,18 +42,17 @@ else {
         
         return loginInfo;
 
-            public User updateUserProfile(@PathVariable Long userId, @RequestBody User updatedUser) 
+           // public User updateUserProfile(@PathVariable Long userId, @RequestBody User updatedUser) 
     }
 
 */
     
-    public Account  getAccountByUsernameAndPassword(String userName, String password){
+ //Don't need this
+    public Account  getByUsernameAndPassword(String userName, String password){
 
-         Account loginInfo = accountRepository.findByUsernameAndPassword(userName, password);
+          return accountRepository.findByUsernameAndPassword(userName, password);
         
-        return loginInfo;
-
-            
+                  
     }
 
 

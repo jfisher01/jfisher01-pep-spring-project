@@ -23,30 +23,32 @@ public MessageService (MessageRepository messageRepository){
 
 
     public Message save(Message message) {
-      if ((this.messageRepository.findById(null).isEmpty()) && (message.getMessageText() != "")
-      && (message.getMessageText().length() <= 225)) {
- 
-             return messageRepository.save(message);
+      if ((message.getMessageText() != "")
+      && (message.getMessageText().length() <= 225) && (message.getPostedBy() != null)) {
+        messageRepository.save(message);
+             return message;
          }
-         message.equals(null);
-         return messageRepository.save(message);
+    
+         return null;
      }
 
 
      public List<Message> listAll() {
 
-      List<Message> allMessages = messageRepository.findAll();
+     // List<Message> allMessages = messageRepository.findAll();
    
-      if (allMessages.equals(null)) {
-          return allMessages;
-      } else {
+      //if (allMessages.equals(null)) {
+         // return allMessages;
+      //} else {
 
-          return allMessages;
-      }
+          //return allMessages;
+     // }
+     return messageRepository.findAll();
   }
 
 
   public Message getMessageById(Integer messageId) {
+    
     return messageRepository.findById(messageId).get();
 }
  
@@ -65,9 +67,8 @@ Optional<Message> optionalMessage = messageRepository.findById(message_id);
 
   Message changMessage = optionalMessage.get();
   message.setMessageText(changMessage.getMessageText());
-  messageRepository.save(message);
+ return  messageRepository.save(message);
 
-  return this.messageRepository.getById(message_id);
 }
 
 return null;

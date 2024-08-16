@@ -38,8 +38,10 @@ public class SocialMediaController {
     AccountRepository accountRepository;
     @Autowired
     MessageRepository messageRepository;
-
+    
+    @Autowired
     private AccountService accountService;
+    @Autowired
     private MessageService messageService;
 
 
@@ -48,24 +50,25 @@ public class SocialMediaController {
   //Create account  
    
     @PostMapping("/register")
-    public @ResponseBody ResponseEntity<Account> register(@RequestBody Account account, @RequestParam String username,@RequestParam String password){
+    public @ResponseBody ResponseEntity<?> register(@RequestBody Account account){
            
-           Account newaccount =  accountService.createNewAccount(account, username, password);
-           accountRepository.save(newaccount);
+           Account newaccount =  accountService.createNewAccount(account);
+          // accountRepository.save(newaccount);
 
-           if(newaccount.equals(null)){
-               account.equals(null);
-           return ResponseEntity.status(400).body(newaccount);
+           if(newaccount == null){
+          
+            return ResponseEntity.status(409).body(null);
+          
 
            }
            else if(accountRepository.findById(newaccount.getAccountId()).isPresent()){
-            return ResponseEntity.status(200).body(newaccount);
+           return ResponseEntity.status(200).body(newaccount);
            }
-           else{ 
-             return ResponseEntity.status(409).body(null);
+                
+           return ResponseEntity.status(200).body(newaccount);
 
     }
-  }
+  
 
 
 /*  
@@ -91,64 +94,59 @@ public @ResponseBody Account register(@RequestBody Account newUser) {
 */
 
 
-
+/* 
 //Login
 @PostMapping(value ="/login")
 public @ResponseBody ResponseEntity<List<Account>> logIn(@RequestBody Account account,@RequestParam String username,@RequestParam String password){
 
   //accountRepository.findByUsernameAndPassword(username, password);;
-   List <Account> loginAccount = accountRepository.findByUsernameAndPassword(username, password);
+ //  List <Account> loginAccount = accountRepository.findByUsernameAndPassword(username, password);
    
-    if(loginAccount.isEmpty()){
+  //  if(loginAccount.isEmpty()){
   
-        return ResponseEntity.status(401).body(null);
+     //   return ResponseEntity.status(401).body(null);
        
-    }
-    else if( Collections.frequency(loginAccount, account.getUsername() ) >1){    
+   // }
+    //else if( Collections.frequency(loginAccount, account.getUsername() ) >1){    
                
 
-   return ResponseEntity.status(409).body(loginAccount);
+   //return ResponseEntity.status(409).body(loginAccount);
   
-  }
- else{
-  return ResponseEntity.status(200).body(loginAccount);
- }
-
-}
-
-
-/* 
-@RequestMapping(("/login" , method = RequestMethod.POST))
-public  ResponseEntity login(@RequestBody Account account,@RequestParam String username,@RequestParam String password) {
-  // Logic to authenticate user login
-  Account loginAccount = accountRepository.findByUsernameAndPassword(username, password);//findByUsernameAndPassword(username, password);//accountService.findByUsernameAndPassword(username, passwordl);
-   
-  if(loginAccount.equals(null)){
-
-      return ResponseEntity.status(401).body(lo);
-     
-  }
-  else if( Collections.frequency(loginAccount, account.getUsername() ) >1){    
-             
-
- return ResponseEntity.status(409).body(loginAccount);
-
-}
-else{
-return ResponseEntity.status(200).body(loginAccount);
-}
+//  }
+ //else{
+  return null;//ResponseEntity.status(200).body(loginAccount);
+ //}
 
 }
 */
+
+ @PostMapping("/login")
+//@RequestMapping(value = "/login", method = RequestMethod.POST)
+public  ResponseEntity login(@RequestBody Account account) {
+  // Logic to authenticate user login
+  Account loginAccount = accountRepository.findByUsernameAndPassword(account.getUsername(), account.getPassword());//findByUsernameAndPassword(username, password);//accountService.findByUsernameAndPassword(username, passwordl);
+   
+  if(loginAccount != null){
+
+      return ResponseEntity.status(200).body(loginAccount);
+     
+  }
+  
+          
+ return ResponseEntity.status(401).body(loginAccount);
+
+
+}
+
 
 
 
 
 //Create message
 @PostMapping("/messages")
-public ResponseEntity<Message> createMessage(@RequestBody Message message) {
+public ResponseEntity<?> createMessage(@RequestBody Message message) {
 
-if(!messageService.save(message).equals(null)){
+if(messageService.save(message) != null){
 
 return   ResponseEntity.status(200).body(message); 
 }
@@ -167,7 +165,7 @@ public ResponseEntity<List<Message>> getAllMessages() {
  if(allMessages.isEmpty()){
     allMessages.isEmpty();
     
-  return ResponseEntity.status(200).body(allMessages);
+  return   ResponseEntity.status(200).body(allMessages);
  }
 
     return ResponseEntity.status(200).body(allMessages);
@@ -179,30 +177,30 @@ public ResponseEntity<List<Message>> getAllMessages() {
 
 //Get message by id
 @GetMapping("/messages/{messageId")
-public ResponseEntity<Message> getMessages(@PathVariable Integer messageId) {
-    try {
-        Message message = messageService.getMessageById(messageId);
-        return ResponseEntity.status(200).body(message);
-    }
+public ResponseEntity<?> getMessageById(@PathVariable Integer messageId) {
     
- catch (NoSuchElementException e) {
-    return new ResponseEntity<Message>(HttpStatus.NOT_FOUND);
-        
-    }      
+        Message message = messageService.getMessageById(messageId);
+
+        if(!message.equals(null)){
+          return ResponseEntity.status(200).body(message);
+        }
+        return ResponseEntity.status(200).body(null);
+         
 }
 
 
 //Delete Account
 @DeleteMapping("messages/{messageId}")
-public ResponseEntity<Message> deleteMessage(@PathVariable("messageId") Integer messageId) {
+public ResponseEntity<?> deleteMessage(@PathVariable("messageId") Integer messageId) {
 
     if(!messageRepository.findById(messageId).isEmpty()){ 
     messageRepository.deleteById(messageId);
-
-    return ResponseEntity.status(200).body(null);
+    
+    return  ResponseEntity.status(200).body(1);  
     }
    
     else{
+
       return ResponseEntity.status(200).body(null);
     }
   } 
@@ -213,7 +211,7 @@ public ResponseEntity<Message> deleteMessage(@PathVariable("messageId") Integer 
 public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Integer messageId) {
    
 
-      if(!messageService.getMessageById(messageId).equals(null)){
+      if(messageService.getMessageById(messageId) != null){
               
                // Message updatedMessage =    messageService.getMessageById(messageId);
               //updatedMessage = messageService.updatMessage(message, messageId, updatedMessage.getMessageText()) ;  
@@ -243,6 +241,6 @@ public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Inte
 }
    
 
-
-
 }
+
+
