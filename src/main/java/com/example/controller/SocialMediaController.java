@@ -9,7 +9,6 @@ import com.example.service.MessageService;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -47,28 +46,48 @@ public class SocialMediaController {
 
   //Create account  
     @PostMapping("/register")
-    public @ResponseBody ResponseEntity<List<Account>> register(@RequestBody Account account, @RequestParam String username,@RequestParam String password){
+    public @ResponseBody ResponseEntity<Account> register(@RequestBody Account account, @RequestParam String username,@RequestParam String password){
            
-             accountService.createNewAccount(account, username, password);
-             return ResponseEntity.status(200).body(null);
+           Account newaccount =  accountService.createNewAccount(account, username, password);
+           accountRepository.save(newaccount);
+
+           if(newaccount.equals(null)){
+               account.equals(null);
+           return ResponseEntity.status(400).body(newaccount);
+
+           }
+           else if(accountRepository.findById(newaccount.getAccountId()).isPresent()){
+            return ResponseEntity.status(200).body(newaccount);
+           }
+           else{ 
+             return ResponseEntity.status(409).body(null);
 
     }
-
+  }
 
 //Login
-@PostMapping(value = "/login" )
-public @ResponseBody ResponseEntity<List<Account>> logIn(@RequestBody Account account, @PathVariable String username,@PathVariable String passwordl){
+@PostMapping(value ="/login")
+public @ResponseBody ResponseEntity<List<Account>> logIn(@RequestBody Account account,@RequestParam String username,@RequestParam String password){
 
-   List <Account> loginAccount = accountService.findByUsernameAndPassword(username, passwordl);
-
-    if(accountRepository.findByUsernameAndPassword(username, passwordl).isEmpty()){
-        return ResponseEntity.status(401).body(null);
-    
-    }
+  //accountRepository.findByUsernameAndPassword(username, password);;
+   List <Account> loginAccount = accountRepository.findByUsernameAndPassword(username, password);//accountService.findByUsernameAndPassword(username, passwordl);
+   
+    if(loginAccount.isEmpty()){
   
-    return ResponseEntity.status(200).body(loginAccount);
-}
+        return ResponseEntity.status(401).body(null);
+       
+    }
+    else if( Collections.frequency(loginAccount, account.getUsername() ) >1){    
+               
 
+   return ResponseEntity.status(409).body(loginAccount);
+  
+  }
+ else{
+  return ResponseEntity.status(200).body(loginAccount);
+ }
+
+}
 
 //Create message
 @PostMapping("/messages")
@@ -112,16 +131,17 @@ public ResponseEntity<Message> getMessages(@PathVariable Integer messageId) {
 
 //Delete Account
 @DeleteMapping("messages/{messageId}")
-public ResponseEntity<HttpStatus> deleteMessage(@PathVariable("messageId") Integer messageId) {
-  try {
+public ResponseEntity<Message> deleteMessage(@PathVariable("messageId") Integer messageId) {
+
+    if(!messageRepository.findById(messageId).isEmpty()){ 
     messageRepository.deleteById(messageId);
 
     return ResponseEntity.status(200).body(null);
+    }
+    else{
+      return ResponseEntity.status(200).body(null) ;
+    }
   } 
-  catch (Exception e) {
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
-  }
-}
 
 
 //Update message
@@ -129,19 +149,19 @@ public ResponseEntity<HttpStatus> deleteMessage(@PathVariable("messageId") Integ
 public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Integer messageId) {
    
 
-            if(!messageService.getMessageById(messageId).equals(null)){
+      if(!messageService.getMessageById(messageId).equals(null)){
               
-                Message updatedMessage =    messageService.getMessageById(messageId);
-              updatedMessage = messageService.updatMessage(message, messageId, updatedMessage.getMessageText()) ;  
+               // Message updatedMessage =    messageService.getMessageById(messageId);
+              //updatedMessage = messageService.updatMessage(message, messageId, updatedMessage.getMessageText()) ;  
           
-              return ResponseEntity.status(200).body(updatedMessage);
+              return ResponseEntity.status(200).body(messageService.getMessageById(messageId));
 	}
-    return ResponseEntity.status(400).body("Client Error");
+    return ResponseEntity.status(400).body(message);
     }      
 
 
 @GetMapping("/accounts/{accountId}/messages")
-  public ResponseEntity<List<Message>> findByPostedBy(Integer postedBy) {
+  public ResponseEntity<List<Message>> findByPostedBy(@RequestParam Integer postedBy) {
     try {
       List<Message> messages = messageRepository.findByPostBy(postedBy);
 

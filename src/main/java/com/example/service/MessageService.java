@@ -66,9 +66,8 @@ return null;
 }
 
 
-public List<Message> findByPostBy(Integer postedBy) {
+public List<Message>  findByPostBy(Integer postedBy) {
 
-   
   return messageRepository.findByPostBy(postedBy);
 }
 
