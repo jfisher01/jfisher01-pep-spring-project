@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.entity.Account;
 import com.example.repository.AccountRepository;
-
+import java.util.*;
 
 
 @Service
@@ -19,24 +19,31 @@ public class AccountService {
     }
 
 
-    public Account createNewAccount(Account account){
+    public Account createNewAccount(Account account, String username, String password){
 
         if ((account.getUsername() != "") && (account.getPassword().length() >= 4)
         && (account.getUsername() != null)) {
-    return accountRepository.save(account); 
-} else {
+        
+        return    accountRepository.save(new Account(username, password));
+
+} 
+else {
     return null;
 }
     }
-  
 
-        public Account logIntoAccount(Account account, String username, String password) {
 
-            account = accountRepository.logIntoAccount(account, username, password);
-    
-                return account;
-        } 
-        
+    //Login to account
+    public List<Account>  findByUsernameAndPassword(String userName, String password){
+
+         List <Account> loginInfo = accountRepository.findByUsernameAndPassword(userName, password);
+
+        return loginInfo;
+
+            
+    }
+
+
 
     }
 

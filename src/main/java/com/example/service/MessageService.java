@@ -1,106 +1,79 @@
 package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
-//import com.example.entity.Account;
 import com.example.entity.Message;
 import com.example.repository.MessageRepository;
-//import com.example.repository.AccountRepository;
 
-/* 
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-*/
+
 
 @Service
 public class MessageService {
 
-    MessageRepository messageRepository;
+  final MessageRepository messageRepository;
 
-    @Autowired
-    public MessageService (MessageRepository messageRepository){
+@Autowired
+public MessageService (MessageRepository messageRepository){
 
-        this.messageRepository = messageRepository;
-
-    }
-
-    public Message addMessage(Message message){
-
-        return messageRepository.save(message);
-    }
-
-    public  List<Message> getAllMessage(){
-  
-        return messageRepository.findAll();
+      this.messageRepository = messageRepository;
 
     }
 
 
-    public Message getMessageyById(int messageId){
-        
-        Optional<Message> optionalMessage = messageRepository.findById(messageId);
-        if(optionalMessage.isPresent()){
-            return optionalMessage.get();
-        }
-        else{
-            return null;
-        }
-    }
-
-        public void deleteMessageById(Integer messageId){
-    
-               messageRepository.deleteById(messageId);
-        }
-    
-        public Message getAllPostByOneUser(int posted_by, Message message) {
-
-           if(message.getPostedBy().equals(posted_by)) 
-
-               messageRepository.save(message);
-           
-               return message;
-           
-        }
+    public Message save(Message message) {
+      if ((this.messageRepository.findById(null).isEmpty()) && (message.getMessageText() != "")
+      && (message.getMessageText().length() <= 225)) {
+ 
+             return messageRepository.save(message);
+         }
+         message.equals(null);
+         return messageRepository.save(message);
+     }
 
 
-     public Message updatMessage(Message message, Integer message_id, String message_text) {
-
-            if ((this.messageRepository.findById(message_id) != null) && (message.getMessageText() != "")
-                    && (message.getMessageText().length() <= 225)) {
-
-        Optional<Message> optionalMessage = messageRepository.findById(message_id);
-    
-            Message changMessage = optionalMessage.get();
-            message.setMessageText(changMessage.getMessageText());
-            messageRepository.save(message);
-
-            return this.messageRepository.getById(message_id);
-        }
-
-        return null;
-    }
+     public List<Message> listAll() {
+      return messageRepository.findAll();
+  }
 
 
-    public List<Message> getAllPostByOneUser(Integer posted_by) {
-       
-       // ArrayList<Message> messagesPostedBy = new ArrayList<>();
+  public Message getMessageById(Integer messageId) {
+    return messageRepository.findById(messageId).get();
+}
+ 
+
+public void delete(Integer messageId) {
+  messageRepository.deleteById(messageId);
+}
+
+
+public Message updatMessage(Message message, Integer message_id, String message_text) {
+
+  if ((this.messageRepository.findById(message_id) != null) && (message.getMessageText() != "")
+          && (message.getMessageText().length() <= 225)) {
+
+Optional<Message> optionalMessage = messageRepository.findById(message_id);
+
+  Message changMessage = optionalMessage.get();
+  message.setMessageText(changMessage.getMessageText());
+  messageRepository.save(message);
+
+  return this.messageRepository.getById(message_id);
+}
+
+return null;
+}
+
+
+public List<Message> findByPostBy(Integer postedBy) {
+
    
-        return  messageRepository.findByPostedBy(posted_by);  //findByPostedBy();  //.posted_by(posted_by);  //.find//messageDAO.getAllMessageByThisUser(posted_by);
-     
-    }
+  return messageRepository.findByPostBy(postedBy);
+}
 
 
-
-    /*
-     * /*
+/* 
  * 1: Our API should be able to process new User registrations.
 I should be able to create a new Account on the endpoint POST localhost:8080/register
 

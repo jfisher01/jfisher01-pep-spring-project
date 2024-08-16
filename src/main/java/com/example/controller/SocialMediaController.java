@@ -5,23 +5,25 @@ import com.example.repository.AccountRepository;
 import com.example.repository.MessageRepository;
 import com.example.service.AccountService;
 import com.example.service.MessageService;
+
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.data.repository.query.Param;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.PutMapping;
+
 import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -41,139 +43,122 @@ public class SocialMediaController {
     private MessageService messageService;
 
 
-@PostMapping(value = "/register")
-@ResponseStatus(HttpStatus.CREATED)
-public ResponseEntity<Account> register(@RequestBody Account account) {
-            try {
-                 Account newRegisteredAccount = accountRepository.save(new Account(account.getUsername(), 
-                 account.getPassword()));
-              return new ResponseEntity<>(newRegisteredAccount, HttpStatus.valueOf(200).OK);
-            } catch (Exception e) {
-              return new ResponseEntity<>(null, HttpStatus.valueOf(409).CONFLICT);  //CONFLICT);
-            }
+    
 
-}
+  //Create account  
+    @PostMapping("/register")
+    public @ResponseBody ResponseEntity<List<Account>> register(@RequestBody Account account, @RequestParam String username,@RequestParam String password){
+           
+             accountService.createNewAccount(account, username, password);
+             return ResponseEntity.status(200).body(null);
 
-    @PostMapping(value = "/login" )
-    @ResponseStatus(HttpStatus.CREATED)
-    public @ResponseBody ResponseEntity<Account> logIn(@RequestBody Account account, @PathVariable String username,@PathVariable String passwordl){
-
-      Account login = accountService.logIntoAccount(account, username, passwordl);
-       
-        return ResponseEntity.ok().body(login);
     }
 
+
+//Login
+@PostMapping(value = "/login" )
+public @ResponseBody ResponseEntity<List<Account>> logIn(@RequestBody Account account, @PathVariable String username,@PathVariable String passwordl){
+
+   List <Account> loginAccount = accountService.findByUsernameAndPassword(username, passwordl);
+
+    if(accountRepository.findByUsernameAndPassword(username, passwordl).isEmpty()){
+        return ResponseEntity.status(401).body(null);
+    
+    }
   
-    @PostMapping(value = "/messages")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Message> postMessage(@RequestBody Message message) {
-                try {
-                     Message newMessage = messageRepository.save(new Message(message.getPostedBy(), 
-                     message.getMessageText(), message.getTimePostedEpoch()));
-                  return new ResponseEntity<>(newMessage, HttpStatus.CREATED);
-                } catch (Exception e) {
-                  return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-    
-    }
-
-
-/* 
-@PostMapping(value = "/messages")
-@ResponseStatus(HttpStatus.CREATED)
-    public Message postMessage(@RequestBody Message createdMessage) {
- 
-        return messageService.addMessage(createdMessage);
-
-}
-8?
-
-
-@PostMapping(value = "/messages")
-@ResponseStatus(HttpStatus.CREATED)
-public  List<Message> getAllMessage(@RequestBody Message message) {
-    
-    return messageService.getAllMessage();
+    return ResponseEntity.status(200).body(loginAccount);
 }
 
-@GetMapping("/messages/{messageId}")
-public ResponseEntity<Message> getMessageById(@PathVariable Integer messageId) {
+
+//Create message
+@PostMapping("/messages")
+public ResponseEntity<Message> createMessage(@RequestBody Message message) {
+
+if(!messageService.save(message).equals(null)){
+
+return   ResponseEntity.status(200).body(message); 
+}
+
+  return ResponseEntity.status(400).body(message); 
+}
+
+
+
+//Find all message
+@GetMapping("/messages")
+public ResponseEntity<List<Message>> getAllMessages() {
+
+    return ResponseEntity.status(200).body(messageService.listAll());
+  
+}
+
+
+
+
+//Get message by id
+@GetMapping("/messages/{messageId")
+public ResponseEntity<Message> getMessages(@PathVariable Integer messageId) {
     try {
-        Message message = messageService.getMessageyById(messageId);
-        return new ResponseEntity<Message>(message, HttpStatus.OK);
-    } 
-catch (NoSuchElementException e) {
-        return new ResponseEntity<Message>(HttpStatus.NOT_FOUND);
+        Message message = messageService.getMessageById(messageId);
+        return ResponseEntity.status(200).body(message);
+    }
+    
+ catch (NoSuchElementException e) {
+    return new ResponseEntity<Message>(HttpStatus.NOT_FOUND);
+        
     }      
 }
 
-/*  
-@DeleteMapping("/messages/{messageId}")
+
+//Delete Account
+@DeleteMapping("messages/{messageId}")
 public ResponseEntity<HttpStatus> deleteMessage(@PathVariable("messageId") Integer messageId) {
   try {
     messageRepository.deleteById(messageId);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-  } catch (Exception e) {
-    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+
+    return ResponseEntity.status(200).body(null);
+  } 
+  catch (Exception e) {
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
   }
 }
 
-*/
 
-@DeleteMapping("/messages/{messageId}")
-@ResponseStatus(HttpStatus.NO_CONTENT)
-public void delete(@PathVariable Integer messageId) {
-
-    messageService.deleteMessageById(messageId);  
-}
-
-
-
-
+//Update message
 @PatchMapping("/messages/{messageId}")
-public ResponseEntity<Message> update(@RequestBody Message message, @PathVariable Integer messageId, @PathVariable String messageText) {
-    try {
-        Message existedMessage = messageService.updatMessage(message, messageId, messageText);
-       
-        messageRepository.save(existedMessage);
-       return ResponseEntity.ok().body(existedMessage);   
-    
-    } catch (NoSuchElementException e) {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    } 
-}
+public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Integer messageId) {
+   
 
-/* 
+            if(!messageService.getMessageById(messageId).equals(null)){
+              
+                Message updatedMessage =    messageService.getMessageById(messageId);
+              updatedMessage = messageService.updatMessage(message, messageId, updatedMessage.getMessageText()) ;  
+          
+              return ResponseEntity.status(200).body(updatedMessage);
+	}
+    return ResponseEntity.status(400).body("Client Error");
+    }      
 
-@PatchMapping("/messages/{messageId}")
-public ResponseEntity<Message> updateMessage(@PathVariable("messageId") Integer messageId, @RequestBody Message message) {
-  Optional<Message> messageData = messageRepository.findById(messageId);
-
-  if (messageData.isPresent()) {
-    Message updatedMessage = messageData.get();
-    updatedMessage.setMessageText(message.getMessageText()); 
-    updatedMessage.setPostedBy(message.getPostedBy());  
-    updatedMessage.setTimePostedEpoch(message.getTimePostedEpoch()); 
-
-    return new ResponseEntity<>(messageRepository.save(updatedMessage), HttpStatus.OK);
-  } else {
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-  }
-*/
 
 @GetMapping("/accounts/{accountId}/messages")
   public ResponseEntity<List<Message>> findByPostedBy(Integer postedBy) {
     try {
-      List<Message> messages = messageRepository.findByPostedBy(postedBy);
+      List<Message> messages = messageRepository.findByPostBy(postedBy);
 
       if (messages.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        messages.equals(null);
+        return ResponseEntity.ok(messages);
+   
       }
-      return new ResponseEntity<>(messages, HttpStatus.OK);
+      return ResponseEntity.status(200).body(messages);
     } 
     catch (Exception e) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
+   
+
+
+
 }
