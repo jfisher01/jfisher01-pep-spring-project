@@ -34,20 +34,7 @@ public class AccountService {
 
 
     //Login to account
-     
-    /* 
-    public List<Account>  getByUsernameAndPassword(String userName, String password){
 
-         List <Account> loginInfo = accountRepository.findByUsernameAndPassword(userName, password);
-        
-        return loginInfo;
-
-           // public User updateUserProfile(@PathVariable Long userId, @RequestBody User updatedUser) 
-    }
-
-*/
-    
- //Don't need this
     public Account  getByUsernameAndPassword(String userName, String password){
 
           return accountRepository.findByUsernameAndPassword(userName, password);

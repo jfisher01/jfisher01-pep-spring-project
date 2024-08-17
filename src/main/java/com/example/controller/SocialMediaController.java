@@ -8,6 +8,8 @@ import com.example.service.MessageService;
 
 import java.util.*;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +55,6 @@ public class SocialMediaController {
     public @ResponseBody ResponseEntity<?> register(@RequestBody Account account){
            
            Account newaccount =  accountService.createNewAccount(account);
-          // accountRepository.save(newaccount);
 
            if(newaccount == null){
           
@@ -71,60 +72,10 @@ public class SocialMediaController {
   
 
 
-/*  
-@RequestMapping("/register",method = RequestMethod.POST)
-public @ResponseBody Account register(@RequestBody Account newUser) {
-  Account newaccount =  accountService.createNewAccount(account, username, password);
-           accountRepository.save(newaccount);
-
-           if(newaccount.equals(null)){
-               account.equals(null);
-           return ResponseEntity.status(400).body(newaccount);
-
-           }
-           else if(accountRepository.findById(newaccount.getAccountId()).isPresent()){
-            return ResponseEntity.status(200).body(newaccount);
-           }
-           else{ 
-             return ResponseEntity.status(409).body(null);
-
-    }
-  
-}
-*/
-
-
-/* 
-//Login
-@PostMapping(value ="/login")
-public @ResponseBody ResponseEntity<List<Account>> logIn(@RequestBody Account account,@RequestParam String username,@RequestParam String password){
-
-  //accountRepository.findByUsernameAndPassword(username, password);;
- //  List <Account> loginAccount = accountRepository.findByUsernameAndPassword(username, password);
-   
-  //  if(loginAccount.isEmpty()){
-  
-     //   return ResponseEntity.status(401).body(null);
-       
-   // }
-    //else if( Collections.frequency(loginAccount, account.getUsername() ) >1){    
-               
-
-   //return ResponseEntity.status(409).body(loginAccount);
-  
-//  }
- //else{
-  return null;//ResponseEntity.status(200).body(loginAccount);
- //}
-
-}
-*/
-
  @PostMapping("/login")
-//@RequestMapping(value = "/login", method = RequestMethod.POST)
 public  ResponseEntity login(@RequestBody Account account) {
-  // Logic to authenticate user login
-  Account loginAccount = accountRepository.findByUsernameAndPassword(account.getUsername(), account.getPassword());//findByUsernameAndPassword(username, password);//accountService.findByUsernameAndPassword(username, passwordl);
+
+  Account loginAccount = accountRepository.findByUsernameAndPassword(account.getUsername(), account.getPassword());
    
   if(loginAccount != null){
 
@@ -159,32 +110,29 @@ return   ResponseEntity.status(200).body(message);
 //Find all message
 @GetMapping("/messages")
 public ResponseEntity<List<Message>> getAllMessages() {
-
-  List<Message> allMessages = messageService.listAll();
-
- if(allMessages.isEmpty()){
-    allMessages.isEmpty();
     
-  return   ResponseEntity.status(200).body(allMessages);
- }
+  if(messageService.listAll() == null ){ 
 
-    return ResponseEntity.status(200).body(allMessages);
-  
+    return null;
+  }
+ 
+  return  ResponseEntity.status(200).body(messageService.listAll());
+
 }
 
 
 
 
 //Get message by id
-@GetMapping("/messages/{messageId")
-public ResponseEntity<?> getMessageById(@PathVariable Integer messageId) {
-    
-        Message message = messageService.getMessageById(messageId);
+@GetMapping("/messages/{messageId}")
+public @ResponseBody ResponseEntity <?> getMessageById( Message message, @PathVariable Integer messageId) { 
 
-        if(!message.equals(null)){
-          return ResponseEntity.status(200).body(message);
-        }
-        return ResponseEntity.status(200).body(null);
+    Message  messageGotten = messageService.findById(message, messageId);
+
+  if( messageGotten != null && messageRepository.findById(messageId).isPresent()){
+    return ResponseEntity.status(200).body(message);
+  }
+       return null;  
          
 }
 
@@ -208,35 +156,30 @@ public ResponseEntity<?> deleteMessage(@PathVariable("messageId") Integer messag
 
 //Update message
 @PatchMapping("/messages/{messageId}")
-public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Integer messageId) {
+public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Integer messageId,String messageText) {
    
 
-      if(messageService.getMessageById(messageId) != null){
-              
-               // Message updatedMessage =    messageService.getMessageById(messageId);
-              //updatedMessage = messageService.updatMessage(message, messageId, updatedMessage.getMessageText()) ;  
+      if(messageService.updatMessage(message, messageId, messageText) != null){  
           
-              return ResponseEntity.status(200).body(messageService.getMessageById(messageId));
-	}
+             return  ResponseEntity.status(200).body(1);
+}
+
     return ResponseEntity.status(400).body(message);
     }      
 
 
 @GetMapping("/accounts/{accountId}/messages")
   public ResponseEntity<List<Message>> findByPostedBy(@RequestParam Integer postedBy) {
-    try {
-      List<Message> messages = messageRepository.findByPostBy(postedBy);
+  
+         List<Message> messages = messageRepository.findByPostedBy(postedBy);//findByPostBy(postedBy);
 
-      if (messages.isEmpty()) {
-        messages.equals(null);
-        return ResponseEntity.ok(messages);
+      //if (messageRepository.findByPostedBy(postedBy)) {
+         
+      //  return ResponseEntity.status(200).body(null);
    
-      }
+     // }
       return ResponseEntity.status(200).body(messages);
-    } 
-    catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
 
 }
    

@@ -49,7 +49,7 @@ public class RetrieveMessageByMessageIdTest {
      *  Response Body: JSON represenation of a message object
      */
     @Test
-    public void getMessageGivenMessageIdMessageFound() throws IOException, InterruptedException {
+==    public void getMessageGivenMessageIdMessageFound() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/messages/9999"))
                 .build();

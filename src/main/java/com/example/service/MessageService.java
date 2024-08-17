@@ -35,19 +35,14 @@ public MessageService (MessageRepository messageRepository){
 
      public List<Message> listAll() {
 
-     // List<Message> allMessages = messageRepository.findAll();
+      List<Message> allMessages = messageRepository.findAll();
    
-      //if (allMessages.equals(null)) {
-         // return allMessages;
-      //} else {
-
-          //return allMessages;
-     // }
-     return messageRepository.findAll();
+     
+     return allMessages;
   }
 
 
-  public Message getMessageById(Integer messageId) {
+  public Message findById(Message message,Integer messageId) {
     
     return messageRepository.findById(messageId).get();
 }
@@ -58,16 +53,15 @@ public void delete(Integer messageId) {
 }
 
 
-public Message updatMessage(Message message, Integer message_id, String message_text) {
+public Message updatMessage(Message message, Integer messageId, String messageText) {
 
-  if ((this.messageRepository.findById(message_id) != null) && (message.getMessageText() != "")
-          && (message.getMessageText().length() <= 225)) {
+  if ((this.messageRepository.findById(messageId) != null) && (message.getMessageText() != "")
+          && (message.getMessageText().length() <= 225) && (this.messageRepository.findById(messageId).isPresent())) {  
+Optional<Message> optionalMessage = messageRepository.findById(messageId);
 
-Optional<Message> optionalMessage = messageRepository.findById(message_id);
-
-  Message changMessage = optionalMessage.get();
-  message.setMessageText(changMessage.getMessageText());
- return  messageRepository.save(message);
+  Message changMessageText = optionalMessage.get();
+  changMessageText.setMessageText(changMessageText.getMessageText());
+ return  messageRepository.save(changMessageText);
 
 }
 
@@ -77,7 +71,7 @@ return null;
 
 public List<Message>  findByPostBy(Integer postedBy) {
 
-  return messageRepository.findByPostBy(postedBy);
+  return messageRepository.findByPostedBy(postedBy);
 }
 
 
