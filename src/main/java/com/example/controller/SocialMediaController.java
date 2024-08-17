@@ -110,6 +110,11 @@ return   ResponseEntity.status(200).body(message);
 @GetMapping("/messages")
 public ResponseEntity<List<Message>> getAllMessages() {
  
+  if(messageService.listAll().isEmpty() || messageService.listAll().equals(null) || messageRepository.findAll().equals(null)){
+    messageRepository.findAll().isEmpty();
+    return ResponseEntity.status(400).body(null);
+  }
+
   return  ResponseEntity.status(200).body(messageRepository.findAll());
 
 }

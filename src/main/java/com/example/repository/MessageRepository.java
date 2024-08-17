@@ -14,8 +14,8 @@ public interface MessageRepository extends JpaRepository<Message,Integer> {
 
  
 
-   List<Message> findByPostedBy(@RequestParam("postBy") Integer postedBy);
-
+  //List<Message> findByPostedBy(@RequestParam("postBy") Integer postedBy);
+  List<Message> findByPostedBy(Integer postedBy);
    
   
 }
