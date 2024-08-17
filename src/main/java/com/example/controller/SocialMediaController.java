@@ -101,6 +101,7 @@ if(messageService.save(message) != null){
 return   ResponseEntity.status(200).body(message); 
 }
 
+
   return ResponseEntity.status(400).body(message); 
 }
 
@@ -124,7 +125,7 @@ public ResponseEntity<List<Message>> getAllMessages() {
 
 //Get message by id
 @GetMapping("/messages/{messageId}")
-public ResponseEntity <Message> getMessageById( Message message, @PathVariable Integer messageId) { 
+public ResponseEntity <Message> getMessageById(@RequestBody Message message, @PathVariable Integer messageId) { 
 
   List <Message> addedMessage = new ArrayList<>();
 
@@ -169,7 +170,7 @@ public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Inte
 
 
 @GetMapping("/accounts/{accountId}/messages")
-  public ResponseEntity<List<Message>> findByPostedBy(@RequestParam Integer postedBy) {
+  public ResponseEntity<?> findByPostedBy(@RequestParam Integer postedBy) {
   
          List<Message> messages = messageRepository.findByPostedBy(postedBy);
 
