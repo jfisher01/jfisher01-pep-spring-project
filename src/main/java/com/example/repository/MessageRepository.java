@@ -13,11 +13,7 @@ import com.example.entity.Account;
 public interface MessageRepository extends JpaRepository<Message,Integer> {
 
  
-  //@Query("FROM Message  WHERE username = :username AND password =:password")
-  // List<Account>  findByUsernameAndPassword(@Param("username") String username,@Param("password") String password);
 
-  // @Query("FROM Message WHERE postedBy =:postedBy")
-  // @Query("SELECT m FROM Message m WHERE m.postedBy =:postedBy")
    List<Message> findByPostedBy(@RequestParam("postBy") Integer postedBy);
 
    

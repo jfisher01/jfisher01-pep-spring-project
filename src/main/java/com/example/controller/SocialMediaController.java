@@ -82,7 +82,6 @@ public  ResponseEntity login(@RequestBody Account account) {
       return ResponseEntity.status(200).body(loginAccount);
      
   }
-  
           
  return ResponseEntity.status(401).body(loginAccount);
 
@@ -110,13 +109,8 @@ return   ResponseEntity.status(200).body(message);
 //Find all message
 @GetMapping("/messages")
 public ResponseEntity<List<Message>> getAllMessages() {
-    
-  if(messageService.listAll() == null ){ 
-
-    return null;
-  }
  
-  return  ResponseEntity.status(200).body(messageService.listAll());
+  return  ResponseEntity.status(200).body(messageRepository.findAll());
 
 }
 
@@ -125,14 +119,15 @@ public ResponseEntity<List<Message>> getAllMessages() {
 
 //Get message by id
 @GetMapping("/messages/{messageId}")
-public @ResponseBody ResponseEntity <?> getMessageById( Message message, @PathVariable Integer messageId) { 
+public ResponseEntity <Message> getMessageById( Message message, @PathVariable Integer messageId) { 
 
-    Message  messageGotten = messageService.findById(message, messageId);
+  List <Message> addedMessage = new ArrayList<>();
 
-  if( messageGotten != null && messageRepository.findById(messageId).isPresent()){
-    return ResponseEntity.status(200).body(message);
-  }
-       return null;  
+Message messageById = messageService.findById(message, messageId);
+addedMessage.add(messageById);
+
+
+       return  ResponseEntity.status(200).body(messageById);  
          
 }
 
@@ -171,13 +166,8 @@ public ResponseEntity<?> update(@RequestBody Message message, @PathVariable Inte
 @GetMapping("/accounts/{accountId}/messages")
   public ResponseEntity<List<Message>> findByPostedBy(@RequestParam Integer postedBy) {
   
-         List<Message> messages = messageRepository.findByPostedBy(postedBy);//findByPostBy(postedBy);
+         List<Message> messages = messageRepository.findByPostedBy(postedBy);
 
-      //if (messageRepository.findByPostedBy(postedBy)) {
-         
-      //  return ResponseEntity.status(200).body(null);
-   
-     // }
       return ResponseEntity.status(200).body(messages);
 
 

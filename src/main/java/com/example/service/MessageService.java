@@ -24,11 +24,11 @@ public MessageService (MessageRepository messageRepository){
 
     public Message save(Message message) {
       if ((message.getMessageText() != "")
-      && (message.getMessageText().length() <= 225) && (message.getPostedBy() != null)) {
+      && (message.getMessageText().length() <= 225) && (message.getPostedBy() != null) ) {
         messageRepository.save(message);
              return message;
          }
-    
+          
          return null;
      }
 
@@ -75,31 +75,4 @@ public List<Message>  findByPostBy(Integer postedBy) {
 }
 
 
-/* 
- * 1: Our API should be able to process new User registrations.
-I should be able to create a new Account on the endpoint POST localhost:8080/register
-
-2: Our API should be able to process User logins.
-I should be able to verify my login on the endpoint POST localhost:8080/login
-
-3: Our API should be able to process the creation of new messages.
- I should be able to submit a new post on the endpoint POST localhost:8080/messages
-
-4: Our API should be able to retrieve all messages.
-I should be able to submit a GET request on the endpoint GET localhost:8080/messages
-
-5: Our API should be able to retrieve a message by its ID.
-I should be able to submit a GET request on the endpoint GET localhost:8080/messages/{messageId}.
-
-6: Our API should be able to delete a message identified by a message ID.
- I should be able to submit a DELETE request on the endpoint DELETE localhost:8080/messages/{messageId}.
-
-7: Our API should be able to update a message text identified by a message ID.
- I should be able to submit a PATCH request on the endpoint PATCH localhost:8080/messages/{messageId}
-
-8: Our API should be able to retrieve all messages written by a particular user.
-I should be able to submit a GET request on the endpoint GET localhost:8080/accounts/{accountId}/messages.
-
-9: The Project utilizes the Spring Framework.
-     */
 }
